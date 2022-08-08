@@ -1,5 +1,6 @@
+import { useState } from "react"
+
 const Country = ({country}) => {
-    console.log(country)
     return (
         <div>
             <h1>{country.name}</h1>
@@ -7,7 +8,7 @@ const Country = ({country}) => {
             <div>area {country.area}</div>
             <h2>languages:</h2>
             <ul>
-                {country.languages.map(language => <li>{language.name}</li>)}
+                {country.languages.map((language , index) => <li key={index}>{language.name}</li>)}
             </ul>
             <img alt={country.flag} src={country.flags.png} />
         </div>
@@ -17,7 +18,11 @@ const Country = ({country}) => {
 const Countries = ({countries, countriesFilter}) => {
     // console.log(countries.filter(countriesFilter).length)
     const filteredCountries = countries.filter(countriesFilter)
-
+    const [showCountry, setShowCountry] = useState({})
+    const handleClick = (country) => {
+        setShowCountry(country)
+        console.log("Country: ", country)
+    }
     if (filteredCountries.length > 10) {
         return (
             <div>
@@ -33,7 +38,19 @@ const Countries = ({countries, countriesFilter}) => {
     } else {
         return (
             <div>
-                {filteredCountries.map((country, index) => <div key={index}>{country.name}</div>)}
+                <div>
+                    {filteredCountries.map(
+                        (country, index) => 
+                        <div key={index}>
+                            {country.name} 
+                            <button key={index} onClick={() => handleClick(country)} >show</button>
+                            
+                        </div>
+                    )}
+                </div>
+                <div>
+                    <Country key={showCountry.name} country={showCountry} />
+                </div>
             </div>
         )
     }

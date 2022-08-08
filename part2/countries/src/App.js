@@ -21,6 +21,7 @@ const App = () => {
   const countriesFilter = ({name}) => name.toLowerCase().includes(filter.toLowerCase()) ? true : false
 
   const handleFilterChange = (event) => {
+    event.preventDefault()
     setFilter(event.target.value)
   }
 
