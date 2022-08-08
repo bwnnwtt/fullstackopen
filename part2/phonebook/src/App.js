@@ -53,7 +53,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      <Phonebook key={persons.i} persons={persons} />
+      <Phonebook persons={persons} />
     </div>
   )
 }
