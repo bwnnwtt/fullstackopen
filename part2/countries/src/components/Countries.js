@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 const Country = ({country}) => {
     return (
@@ -16,13 +16,14 @@ const Country = ({country}) => {
 }
 
 const Countries = ({countries, countriesFilter}) => {
-    // console.log(countries.filter(countriesFilter).length)
+    
     const filteredCountries = countries.filter(countriesFilter)
     const [showCountry, setShowCountry] = useState({})
+
     const handleClick = (country) => {
         setShowCountry(country)
-        console.log("Country: ", country)
     }
+
     if (filteredCountries.length > 10) {
         return (
             <div>
@@ -41,15 +42,15 @@ const Countries = ({countries, countriesFilter}) => {
                 <div>
                     {filteredCountries.map(
                         (country, index) => 
-                        <div key={index}>
-                            {country.name} 
-                            <button key={index} onClick={() => handleClick(country)} >show</button>
-                            
-                        </div>
+                            <div key={index}>
+                                {country.name} 
+                                <button key={index} onClick={() => handleClick(country)} >show</button>
+                            </div>
+                        
                     )}
                 </div>
                 <div>
-                    <Country key={showCountry.name} country={showCountry} />
+                   {showCountry.languages !== undefined && <Country country={showCountry} />}
                 </div>
             </div>
         )
