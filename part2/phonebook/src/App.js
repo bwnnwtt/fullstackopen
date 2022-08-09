@@ -24,7 +24,9 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     
-    if(persons.map(person => person.name).indexOf(newName) === -1) {
+    const idx = persons.map(person => person.name).indexOf(newName)
+    console.log("index: ", idx)
+    if(idx === -1) {
       const personObject = {
         name: newName,
         number: newNumber,
@@ -39,7 +41,19 @@ const App = () => {
         })
       
     } else {
-      alert(`${newName} is already added to phonebook`)
+      if(persons[idx].number !== newNumber) {
+        if(window.confirm(`${persons[idx].name} is already added to phonebook, replace the old number with a new one?`)) {
+          const changedPersonNumber = { ...persons[idx], number: newNumber}
+          personService
+            .update(persons[idx].id, changedPersonNumber)
+            .then(updatedPerson => {
+              setPersons(persons.map(person => person.id !== persons[idx].id ? person : updatedPerson))
+            })
+        }
+          
+      } else {
+        alert(`${newName} is already added to phonebook`)
+      }
     }
   }
 
