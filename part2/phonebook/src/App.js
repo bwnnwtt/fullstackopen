@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import personService from './services/personService'
+import Notification from './components/Notification'
 
 const App = () => {
 
@@ -20,16 +21,16 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   const addPerson = (event) => {
     event.preventDefault()
     
     const idx = persons.map(person => person.name).indexOf(newName)
-    console.log("index: ", idx)
     if(idx === -1) {
       const personObject = {
         name: newName,
-        number: newNumber,
+        number: newNumber
       }
 
       personService
@@ -38,6 +39,12 @@ const App = () => {
           setPersons(persons.concat(addedPerson))
           setNewName('')
           setNewNumber('')
+          const message = `Added ${addedPerson.name}`
+          const type = 'success'
+          setNotification({ message: message, type: type})
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
         })
       
     } else {
@@ -48,6 +55,12 @@ const App = () => {
             .update(persons[idx].id, changedPersonNumber)
             .then(updatedPerson => {
               setPersons(persons.map(person => person.id !== persons[idx].id ? person : updatedPerson))
+              const message = `Updated ${updatedPerson.name}'s number to ${updatedPerson.number}`
+              const type = 'success'
+              setNotification({ message: message, type: type})
+              setTimeout(() => {
+                setNotification(null)
+              }, 3000)
             })
         }
           
@@ -71,12 +84,22 @@ const App = () => {
 
   const handleDeleteClick = person => {
     if(window.confirm(`Delete ${person.name} ?`))
-      personService.deletePerson(person.id).then(setPersons(persons.filter(n => n.id !== person.id)))
+      personService.deletePerson(person.id)
+        .then(setPersons(persons.filter(n => n.id !== person.id)))
+        .catch(_error => {
+          const message = `Information of ${person.name} has already been removed from server`
+          const type = 'error'
+          setNotification({ message: message, type: type})
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
+        })
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter handleFilterChange={handleFilterChange} value={newFilter} />
       <h2>add a new</h2>
       <PersonForm 
