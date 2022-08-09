@@ -2,15 +2,15 @@ import Persons from './components/Persons'
 import { useEffect, useState } from 'react'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
-import axios from 'axios'
+import personService from './services/personService'
 
 const App = () => {
 
   const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(persons => {
+        setPersons(persons)
       })
   }
 
@@ -28,11 +28,16 @@ const App = () => {
       const personObject = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1
       }
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+
+      personService
+        .create(personObject)
+        .then(addedPerson => {
+          setPersons(persons.concat(addedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+      
     } else {
       alert(`${newName} is already added to phonebook`)
     }
@@ -50,6 +55,11 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const handleDeleteClick = person => {
+    if(window.confirm(`Delete ${person.name} ?`))
+      personService.deletePerson(person.id).then(setPersons(persons.filter(n => n.id !== person.id)))
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -63,7 +73,11 @@ const App = () => {
         handleNumberChange={handleNumberChange}
         />
       <h2>Numbers</h2>
-      <Persons persons={persons} personsFilter={personsFilter}/>
+      <Persons 
+        persons={persons} 
+        personsFilter={personsFilter}
+        handleDeleteClick={handleDeleteClick}
+        />
     </div>
   )
 }
