@@ -46,6 +46,14 @@ const App = () => {
             setNotification(null)
           }, 3000)
         })
+        .catch(error => {
+          const message = error.response.data.error
+          const type = 'error'
+          setNotification({ message: message, type: type})
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
+        })
       
     } else {
       if(persons[idx].number !== newNumber) {
@@ -57,6 +65,14 @@ const App = () => {
               setPersons(persons.map(person => person.id !== persons[idx].id ? person : updatedPerson))
               const message = `Updated ${updatedPerson.name}'s number to ${updatedPerson.number}`
               const type = 'success'
+              setNotification({ message: message, type: type})
+              setTimeout(() => {
+                setNotification(null)
+              }, 3000)
+            })
+            .catch(error => {
+              const message = error.response.data.error
+              const type = 'error'
               setNotification({ message: message, type: type})
               setTimeout(() => {
                 setNotification(null)
@@ -85,7 +101,15 @@ const App = () => {
   const handleDeleteClick = person => {
     if(window.confirm(`Delete ${person.name} ?`))
       personService.deletePerson(person.id)
-        .then(setPersons(persons.filter(n => n.id !== person.id)))
+        .then(() => {
+          setPersons(persons.filter(n => n.id !== person.id))
+          const message = `Deleted ${person.name} from phonebook`
+          const type = 'success'
+          setNotification({ message: message, type: type})
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
+        })
         .catch(_error => {
           const message = `Information of ${person.name} has already been removed from server`
           const type = 'error'
