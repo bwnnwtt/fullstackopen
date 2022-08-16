@@ -8,11 +8,14 @@ const totalLikes = (blogs) => {
 
 const favoriteBlog = (blogs) => {
   if(blogs.length === 0) {
+    
     return {}
+
   } else {
-    maxLikes = Math.max(...blogs.map(blog => blog.likes))
-    // console.log("maxLikes: ", maxLikes)
+
+    const maxLikes = Math.max(...blogs.map(blog => blog.likes))
     return blogs.filter(blog => blog.likes === maxLikes)[0]
+
   }
 }
 
