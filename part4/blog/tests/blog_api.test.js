@@ -89,6 +89,39 @@ test('POST request returns 400 on missing properties', async () => {
     .expect(400)
 })
 
+test('DELETE a resource by id', async () => {
+  const response = await api.get('/api/blogs')
+
+  const id = response.body[0].id
+
+  await api.delete(`/api/blogs/${id}`)
+
+  const response2 = await api.get('/api/blogs')
+
+  expect(response2.body).toHaveLength(initialBlogs.length - 1)
+})
+
+test('UPDATE a resouce by id', async () => {
+  const response = await api.get('/api/blogs')
+
+  const id = response.body[0].id
+
+  const updatedBlog = {
+    title: response.body[0].title,
+    author: response.body[0].author,
+    url: response.body[0].url,
+    likes: 999
+  }
+
+  await api.put(`/api/blogs/${id}`).send(updatedBlog)
+
+  const response2 = await api.get('/api/blogs')
+
+  const blog = response2.body.find(blog => blog.id === id)
+
+  expect(blog.likes).toEqual(updatedBlog.likes)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
