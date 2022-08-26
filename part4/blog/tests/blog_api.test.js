@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -19,12 +20,45 @@ const initialBlogs = [
   }
 ]
 
+
+beforeAll(async () => {
+  await User.deleteMany({})
+  const user = {
+    username: "tester",
+    name: "tester",
+    password: "password"
+  }
+
+  await api
+          .post('/api/users')
+          .send(user)
+          .set("Accept","application/json")
+          .expect("Content-Type", /application\/json/)
+})
+
 beforeEach(async () => {
+  const loginUser = {
+    username: "tester",
+    password: "password"
+  }
+
+  const loggedUser = await api
+    .post("/api/login")
+    .send(loginUser)
+    .set("Accept","application/json")
+    .expect("Content-Type", /application\/json/)
+
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+
+  await api
+    .post('/api/blogs')
+    .send(initialBlogs[0])
+    .set("Authorization", `Bearer ${loggedUser.body.token}`)
+    
+  await api
+    .post('/api/blogs')
+    .send(initialBlogs[1])
+    .set("Authorization", `Bearer ${loggedUser.body.token}`)
 })
 
 test('GET request returns correct number of blogs', async () => {
@@ -45,6 +79,17 @@ test('id property in blog exists', async () => {
 })
 
 test('POST request creates a new blog post', async () => {
+  const loginUser = {
+    username: "tester",
+    password: "password"
+  }
+
+  const loggedUser = await api
+    .post("/api/login")
+    .send(loginUser)
+    .set("Accept","application/json")
+    .expect("Content-Type", /application\/json/)
+
   const newBlog = {
     title: "my new blog post",
     author: "pjj",
@@ -55,6 +100,7 @@ test('POST request creates a new blog post', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
+    .set("Authorization", `Bearer ${loggedUser.body.token}`)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -64,6 +110,17 @@ test('POST request creates a new blog post', async () => {
 })
 
 test('like property is 0 by default', async () => {
+  const loginUser = {
+    username: "tester",
+    password: "password"
+  }
+  
+  const loggedUser = await api
+    .post("/api/login")
+    .send(loginUser)
+    .set("Accept","application/json")
+    .expect("Content-Type", /application\/json/)
+
   const newBlog = {
     title: "no likes",
     author: "pjj93",
@@ -73,6 +130,7 @@ test('like property is 0 by default', async () => {
   const response = await api
     .post('/api/blogs')
     .send(newBlog)
+    .set("Authorization", `Bearer ${loggedUser.body.token}`)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -81,20 +139,45 @@ test('like property is 0 by default', async () => {
 })
 
 test('POST request returns 400 on missing properties', async () => {
+  const loginUser = {
+    username: "tester",
+    password: "password"
+  }
+  
+  const loggedUser = await api
+    .post("/api/login")
+    .send(loginUser)
+    .set("Accept","application/json")
+    .expect("Content-Type", /application\/json/)
+
   const newBlog = {}
 
   const response = await api
     .post('/api/blogs')
     .send(newBlog)
+    .set("Authorization", `Bearer ${loggedUser.body.token}`)
     .expect(400)
 })
 
 test('DELETE a resource by id', async () => {
+  const loginUser = {
+    username: "tester",
+    password: "password"
+  }
+  
+  const loggedUser = await api
+    .post("/api/login")
+    .send(loginUser)
+    .set("Accept","application/json")
+    .expect("Content-Type", /application\/json/)
+
   const response = await api.get('/api/blogs')
 
   const id = response.body[0].id
 
-  await api.delete(`/api/blogs/${id}`)
+  await api
+    .delete(`/api/blogs/${id}`)
+    .set("Authorization", `Bearer ${loggedUser.body.token}`)
 
   const response2 = await api.get('/api/blogs')
 
