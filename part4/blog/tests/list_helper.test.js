@@ -98,10 +98,28 @@ describe('total likes', () => {
   })
 })
 
-describe('max likes', () => {
-  test('test max likes', () => {
+describe('favorite blog', () => {
+  test('test favorite blog', () => {
 
     const result = listHelper.favoriteBlog(biggerBlogList)
     expect(result).toEqual(favoriteBlog)
+  })
+})
+
+describe('find author with most blogs', () => {
+  test('test most blogs', () => {
+
+    const result = listHelper.mostBlogs(biggerBlogList)
+    expect(result.author).toEqual('Robert C. Martin')
+    expect(result.blogs).toEqual(3)
+  })
+})
+
+describe('find author with most likes', () => {
+  test('test most likes', () => {
+
+    const result = listHelper.mostLikes(biggerBlogList)
+    expect(result.likes).toBe(17)
+
   })
 })
