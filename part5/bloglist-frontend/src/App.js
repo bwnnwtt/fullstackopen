@@ -14,9 +14,19 @@ const App = () => {
   const [notification, setNotification] = useState(null)
   const [update, setUpdate] = useState(null)
 
+  function sortByLikes(a, b) {
+    if ( a.likes > b.likes ) {
+      return -1
+    }
+    if ( a.likes < b.likes) {
+      return 1
+    }
+    return 0
+  }
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort(sortByLikes) )
     )  
   }, [update])
 
@@ -89,6 +99,31 @@ const App = () => {
 
   }
 
+  const handleDelete = async (blogObj) => {
+
+    const confirm = window.confirm(`Remove ${blogObj.title} by ${blogObj.author}`)
+
+    if(confirm) {
+      try {
+        const deletedBlog = await blogService.removeBlog(blogObj.id)
+        setUpdate(Math.floor(Math.random() * 1000))
+        const message = `deleted ${blogObj.title}!`
+        const type = 'success'
+        setNotification({ message, type })
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+      } catch (exception) {
+        const message = 'could not delete blog!'
+        const type = 'error'
+        setNotification({ message, type })
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+      }
+    }
+  }
+
   const loginForm = () => (
     <>
       <h2>log in to application</h2>
@@ -144,7 +179,13 @@ const App = () => {
     <>
       <div>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} handleLikes={handleLikes}/>
+          <Blog 
+            key={blog.id} 
+            blog={blog} 
+            handleLikes={handleLikes} 
+            handleDelete={handleDelete}
+            user={user}
+          />
         )}
       </div>
     </>
