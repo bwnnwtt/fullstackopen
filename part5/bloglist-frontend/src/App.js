@@ -12,19 +12,19 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [update, setUpdate] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
-  }, [])
+  }, [update])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('user')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      // noteService.setToken(user.token)
     }
   }, [])
 
@@ -57,6 +57,36 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('user')
     setUser(null)
+  }
+
+  const handleLikes = async (blogObj) => {
+
+    const blogObject = {
+      user: blogObj.user.id,
+      likes: blogObj.likes + 1,
+      author: blogObj.author,
+      title: blogObj.title,
+      url: blogObj.url
+    }
+
+    try {
+      const updatedBlog = await blogService.update(blogObj.id, blogObject)
+      setUpdate(Math.floor(Math.random() * 1000))
+      const message = `added like to ${updatedBlog.title}!`
+      const type = 'success'
+      setNotification({ message, type })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    } catch (exception) {
+      const message = 'could not update blog!'
+      const type = 'error'
+      setNotification({ message, type })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+
   }
 
   const loginForm = () => (
@@ -114,7 +144,7 @@ const App = () => {
     <>
       <div>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} handleLikes={handleLikes}/>
         )}
       </div>
     </>
