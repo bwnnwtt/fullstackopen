@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-const Blog = ({blog, handleLikes, handleDelete, user}) => {
+const Blog = ({ blog, handleLikes, handleDelete, user }) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -22,10 +22,10 @@ const Blog = ({blog, handleLikes, handleDelete, user}) => {
 
   return (
     <>
-      <div style={{...hideWhenVisible, ...blogStyle}}>
+      <div style={{ ...hideWhenVisible, ...blogStyle }}>
         {blog.title} {blog.author} <button onClick={toggleView}>view</button>
       </div>
-      <div style={{...showWhenVisible, ...blogStyle}}>
+      <div style={{ ...showWhenVisible, ...blogStyle }}>
         <div>{blog.title} {blog.author}<button onClick={toggleView}>hide</button></div>
         <div>{blog.url}</div>
         <div>likes {blog.likes} <button onClick={() => handleLikes(blog)}>like</button></div>

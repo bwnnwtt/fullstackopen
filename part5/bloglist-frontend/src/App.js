@@ -27,7 +27,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs.sort(sortByLikes) )
-    )  
+    )
   }, [update])
 
   useEffect(() => {
@@ -107,9 +107,9 @@ const App = () => {
       if (!blogService.token) {
         blogService.setToken(user.token)
       }
-      
+
       try {
-        const deletedBlog = await blogService.removeBlog(blogObj.id)
+        await blogService.removeBlog(blogObj.id)
         setUpdate(Math.floor(Math.random() * 1000))
         const message = `deleted ${blogObj.title}!`
         const type = 'success'
@@ -135,7 +135,7 @@ const App = () => {
       <form onSubmit={handleLogin}>
         <div>
           username
-            <input
+          <input
             type="text"
             value={username}
             name="Username"
@@ -144,7 +144,7 @@ const App = () => {
         </div>
         <div>
           password
-            <input
+          <input
             type="password"
             value={password}
             name="Password"
@@ -179,17 +179,17 @@ const App = () => {
         setNotification(null)
       }, 5000)
     }
-    
+
   }
 
   const blogList = () => (
     <>
       <div>
         {blogs.map(blog =>
-          <Blog 
-            key={blog.id} 
-            blog={blog} 
-            handleLikes={handleLikes} 
+          <Blog
+            key={blog.id}
+            blog={blog}
+            handleLikes={handleLikes}
             handleDelete={handleDelete}
             user={user}
           />
@@ -197,7 +197,7 @@ const App = () => {
       </div>
     </>
   )
-  
+
   const blogFormRef = useRef()
 
   const blogForm = () => (
@@ -213,7 +213,7 @@ const App = () => {
   return (
     <div>
       {user === null && loginForm()}
-      {user !== null && 
+      {user !== null &&
         <div>
           <h2>blogs</h2>
           {notification !== null && <Notification notification={notification}/>}
