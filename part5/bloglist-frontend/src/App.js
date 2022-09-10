@@ -104,6 +104,10 @@ const App = () => {
     const confirm = window.confirm(`Remove ${blogObj.title} by ${blogObj.author}`)
 
     if(confirm) {
+      if (!blogService.token) {
+        blogService.setToken(user.token)
+      }
+      
       try {
         const deletedBlog = await blogService.removeBlog(blogObj.id)
         setUpdate(Math.floor(Math.random() * 1000))
@@ -153,11 +157,14 @@ const App = () => {
   )
 
   const addBlog = async (blogObject) => {
-    
+    if (!blogService.token) {
+      blogService.setToken(user.token)
+    }
     try {
       const addedBlog = await blogService.create(blogObject)
       blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(addedBlog))
+      setUpdate(Math.floor(Math.random() * 1000))
       const message = `A new blog ${addedBlog.title} by ${addedBlog.author} added`
       const type = 'success'
       setNotification({ message, type })
