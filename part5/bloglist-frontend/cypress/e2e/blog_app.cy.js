@@ -34,9 +34,7 @@ describe('Blog app', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.get('#username').type('tester')
-      cy.get('#password').type('password')
-      cy.get('#login-button').click()
+      cy.login({ username: 'tester', password: 'password'})
     })
 
     it('A blog can be created', function() {
@@ -49,6 +47,43 @@ describe('Blog app', function() {
       cy.contains('A new blog testblog by tester added')
 
     })
+
+    describe('a blog exists', function() {
+      beforeEach(function() {
+        const blog = {
+          title: 'firstblog',
+          author: 'tester',
+          url: 'http://www.test.com/post/0',
+          likes: 69
+        }
+        cy.create(blog)
+      })
+
+      it('user can like a blog', function() {
+        cy.contains('view').click()
+        cy.contains('like').click()
+        cy.contains('added like to firstblog!')
+      })
+
+      it('user can delete a blog', function() {
+        cy.contains('view').click()
+        cy.contains('remove').click()
+        cy.contains('deleted firstblog!')
+      })
+
+      it('blog with most likes is shown first', function() {
+        const blog = {
+          title: 'secondblog',
+          author: 'tester',
+          url: 'http://www.test.com/post/0',
+          likes: 0
+        }
+        cy.create(blog)
+        cy.get('.blog').eq(0).should('contain', 'firstblog')
+        cy.get('.blog').eq(1).should('contain', 'secondblog')
+      })
+    })
+
   })
 
 })
