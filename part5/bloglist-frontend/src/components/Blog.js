@@ -21,8 +21,8 @@ const Blog = ({ blog, handleLikes, handleDelete, user }) => {
   }
 
   return (
-    <>
-      <div style={{ ...hideWhenVisible, ...blogStyle }}>
+    <div className='blog'>
+      <div style={{ ...hideWhenVisible, ...blogStyle }} className='blogDefault'>
         {blog.title} {blog.author} <button onClick={toggleView}>view</button>
       </div>
       <div style={{ ...showWhenVisible, ...blogStyle }}>
@@ -32,7 +32,7 @@ const Blog = ({ blog, handleLikes, handleDelete, user }) => {
         <div>{blog.user.name}</div>
         {blog.user.username === user.username && <div><button onClick={() => handleDelete(blog)}>remove</button></div>}
       </div>
-    </>
+    </div>
   )
 }
 
