@@ -19,6 +19,7 @@ const Anecdote = ({ anecdote, handleVote }) => {
 const AnecdoteList = () => {
   const dispatch = useDispatch()
   const anecdotes = useSelector(state => state.anecdotes)
+  const filter = useSelector(state => state.filter)
 
   const vote = ({ anecdote }) => {
     dispatch(addVote(anecdote.id))
@@ -28,22 +29,41 @@ const AnecdoteList = () => {
     }, 5000)
   }
 
-  return(
-    <>
-      {anecdotes
-        .slice()
-        .sort((a,b) => b.votes - a.votes)
-        .map(anecdote =>
-          <Anecdote
-            key={anecdote.id}
-            anecdote={anecdote}
-            // handleVote={() => dispatch(addVote(anecdote.id))}
-            handleVote={() => vote({anecdote})}
-          />
-        )
+  if (filter === '') {
+    return (
+      <>
+        {anecdotes
+          .slice()
+          .sort((a,b) => b.votes - a.votes)
+          .map(anecdote =>
+            <Anecdote
+              key={anecdote.id}
+              anecdote={anecdote}
+              handleVote={() => vote({anecdote})}
+            />
+          )
       }
-    </>
-  )
+      </>
+    )
+  } else {
+    return (
+      <>
+        {anecdotes
+          .filter(anecdote => 
+            anecdote.content.toLowerCase().includes(filter.toLowerCase())
+          )
+          .sort((a,b) => b.votes - a.votes)
+          .map(anecdote =>
+            <Anecdote
+              key={anecdote.id}
+              anecdote={anecdote}
+              handleVote={() => vote({anecdote})}
+            />
+          )
+        }
+      </>
+    )
+  }
 
 }
 
