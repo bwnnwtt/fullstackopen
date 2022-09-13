@@ -17,11 +17,12 @@ const Anecdote = ({ anecdote, handleVote }) => {
 
 const AnecdoteList = () => {
   const dispatch = useDispatch()
-  const anecdotes = useSelector(state => state)
+  const anecdotes = useSelector(state => state.anecdotes)
 
   return(
     <>
       {anecdotes
+        .slice()
         .sort((a,b) => b.votes - a.votes)
         .map(anecdote =>
           <Anecdote
