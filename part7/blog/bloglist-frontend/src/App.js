@@ -14,15 +14,26 @@ import {
 } from './reducers/blogReducer'
 import { setLoggedUser } from './reducers/loggedUserReducer'
 import LoginForm from './components/LoginForm'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
+import { initializeUsers } from './reducers/userReducer'
+import Users from './components/Users'
+import User from './components/User'
 
 const App = () => {
   const dispatch = useDispatch()
   const notification = useSelector((state) => state.notification)
   const blogs = useSelector((state) => state.blogs)
   const loggedUser = useSelector((state) => state.loggedUser)
+  const users = useSelector((state) => state.users)
+  const match = useMatch('/users/:id')
+  const user = match ? users.find((user) => user.id === match.params.id) : null
 
   useEffect(() => {
     dispatch(initializeBlogs())
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(initializeUsers())
   }, [dispatch])
 
   useEffect(() => {
@@ -118,31 +129,49 @@ const App = () => {
   const blogFormRef = useRef()
 
   const blogForm = () => (
-    <Togglable buttonLabel="new blog" ref={blogFormRef}>
+    <Togglable buttonLabel="create new" ref={blogFormRef}>
       <BlogForm createBlog={addBlog} />
     </Togglable>
   )
 
   const logout = () => (
-    <p>
+    <>
       {loggedUser.name} logged in{' '}
       <button onClick={() => handleLogout()}>logout</button>
-    </p>
+    </>
   )
 
   return (
-    <div>
-      {loggedUser === null && <LoginForm />}
-      {loggedUser !== null && (
-        <div>
-          <h2>blogs</h2>
-          <Notification notification={notification} />
-          {logout()}
-          {blogForm()}
-          {blogList()}
-        </div>
-      )}
-    </div>
+    <>
+      <div>
+        <Notification notification={notification} />
+        {loggedUser === null && <LoginForm />}
+        {loggedUser !== null && (
+          <div>
+            <Link to="/">blogs</Link>
+            <Link to="users">users</Link>
+            {logout()}
+            <h2>blog app</h2>
+          </div>
+        )}
+      </div>
+
+      <Routes>
+        <Route path="/users" element={<Users users={users} />} />
+        <Route path="/users/:id" element={<User user={user} />} />
+        <Route
+          path="/"
+          element={
+            loggedUser !== null && (
+              <div>
+                {blogForm()}
+                {blogList()}
+              </div>
+            )
+          }
+        />
+      </Routes>
+    </>
   )
 }
 
