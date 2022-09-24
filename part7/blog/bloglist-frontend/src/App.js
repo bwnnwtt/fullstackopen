@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
@@ -13,14 +12,14 @@ import {
   initializeBlogs,
   updateBlog,
 } from './reducers/blogReducer'
+import { setLoggedUser } from './reducers/loggedUserReducer'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const dispatch = useDispatch()
   const notification = useSelector((state) => state.notification)
   const blogs = useSelector((state) => state.blogs)
+  const loggedUser = useSelector((state) => state.loggedUser)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -30,38 +29,13 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('user')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setLoggedUser(user))
     }
-  }, [])
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      })
-
-      blogService.setToken(user.token)
-
-      window.localStorage.setItem('user', JSON.stringify(user))
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      const message = `user ${user.name} logged in!`
-      const type = 'success'
-      dispatch(setNotification({ message, type }, 5))
-    } catch (exception) {
-      const message = 'wrong username or password'
-      const type = 'error'
-      dispatch(setNotification({ message, type }, 5))
-    }
-  }
+  }, [dispatch])
 
   const handleLogout = () => {
     window.localStorage.removeItem('user')
-    setUser(null)
+    dispatch(setLoggedUser(null))
   }
 
   const handleLikes = async (blogObj) => {
@@ -92,7 +66,7 @@ const App = () => {
 
     if (confirm) {
       if (!blogService.token) {
-        blogService.setToken(user.token)
+        blogService.setToken(loggedUser.token)
       }
 
       try {
@@ -108,45 +82,13 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <>
-      <h2>log in to application</h2>
-      <Notification notification={notification} />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id="username"
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            id="password"
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button id="login-button" type="submit">
-          login
-        </button>
-      </form>
-    </>
-  )
-
   const addBlog = async (blogObject) => {
     if (!blogService.token) {
-      blogService.setToken(user.token)
+      blogService.setToken(loggedUser.token)
     }
     try {
-      dispatch(createBlog(blogObject))
       blogFormRef.current.toggleVisibility()
+      dispatch(createBlog(blogObject))
       const message = `A new blog ${blogObject.title} by ${blogObject.author} added`
       const type = 'success'
       dispatch(setNotification({ message, type }, 5))
@@ -166,7 +108,7 @@ const App = () => {
             blog={blog}
             handleLikes={handleLikes}
             handleDelete={handleDelete}
-            user={user}
+            user={loggedUser}
           />
         ))}
       </div>
@@ -183,20 +125,19 @@ const App = () => {
 
   const logout = () => (
     <p>
-      {user.name} logged in{' '}
+      {loggedUser.name} logged in{' '}
       <button onClick={() => handleLogout()}>logout</button>
     </p>
   )
 
   return (
     <div>
-      {user === null && loginForm()}
-      {user !== null && (
+      {loggedUser === null && <LoginForm />}
+      {loggedUser !== null && (
         <div>
           <h2>blogs</h2>
           <Notification notification={notification} />
           {logout()}
-          {/* <BlogForm createBlog={addBlog} /> */}
           {blogForm()}
           {blogList()}
         </div>
