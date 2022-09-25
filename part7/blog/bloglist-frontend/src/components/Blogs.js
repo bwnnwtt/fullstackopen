@@ -1,23 +1,16 @@
-const Blogs = ({ blogs }) => {
-  const blogStyle = {
-    marginTop: 3,
-    paddingTop: 10,
-    paddingLeft: 10,
-    border: 'solid',
-    borderWidth: 1,
-    paddingBottom: 10,
-  }
+import { Stack } from 'react-bootstrap'
 
+const Blogs = ({ blogs }) => {
   return (
-    <>
+    <Stack gap={3}>
       {blogs.map((blog) => {
         return (
-          <div style={blogStyle} key={blog.id}>
+          <div className="bg-light" key={blog.id} hover>
             <a href={`/blogs/${blog.id}`}>{blog.title}</a>
           </div>
         )
       })}
-    </>
+    </Stack>
   )
 }
 

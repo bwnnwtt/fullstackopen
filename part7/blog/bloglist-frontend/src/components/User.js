@@ -4,7 +4,7 @@ const User = ({ user }) => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h2>{user.name}</h2>
       <h3>
         <p>added blogs</p>

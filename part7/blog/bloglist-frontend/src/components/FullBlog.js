@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button, Form } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { makeComment, updateBlog } from '../reducers/blogReducer'
@@ -46,29 +47,35 @@ const FullBlog = () => {
   }
 
   return (
-    <>
+    <div className="container">
       <h2>{blog.title}</h2>
 
       <a href={blog.url}>{blog.url}</a>
       <div>
         {blog.likes} likes{' '}
-        <button onClick={() => handleLikes(blog)}>like</button>
+        <Button size="sm" variant="dark" onClick={() => handleLikes(blog)}>
+          like
+        </Button>
       </div>
       <div>added by {blog.user.name}</div>
 
       <h3>comments</h3>
-      <form onSubmit={addComment}>
-        <input
-          id="comment"
-          type="text"
-          value={comment}
-          name="Comment"
-          onChange={({ target }) => setComment(target.value)}
-        />
-        <button type="submit">add comment</button>
-      </form>
+      <Form onSubmit={addComment}>
+        <Form.Group className="mt-3 mb-3">
+          <Form.Control
+            id="comment"
+            type="text"
+            value={comment}
+            name="Comment"
+            onChange={({ target }) => setComment(target.value)}
+          />
+          <Button size="sm" variant="dark" type="submit">
+            add comment
+          </Button>
+        </Form.Group>
+      </Form>
       <ul>{blog.comments && blog.comments.map((c) => <li key={c}>{c}</li>)}</ul>
-    </>
+    </div>
   )
 }
 

@@ -6,20 +6,16 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
-import {
-  createBlog,
-  // deleteBlog,
-  initializeBlogs,
-  // updateBlog,
-} from './reducers/blogReducer'
+import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import { setLoggedUser } from './reducers/loggedUserReducer'
 import LoginForm from './components/LoginForm'
-import { Routes, Route, Link, useMatch } from 'react-router-dom'
+import { Routes, Route, Link, useMatch, Navigate } from 'react-router-dom'
 import { initializeUsers } from './reducers/userReducer'
 import Users from './components/Users'
 import User from './components/User'
 import Blogs from './components/Blogs'
 import FullBlog from './components/FullBlog'
+import { Button } from 'react-bootstrap'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -31,10 +27,6 @@ const App = () => {
   const user = userMatch
     ? users.find((user) => user.id === userMatch.params.id)
     : null
-  // const blogMatch = useMatch('/blogs/:id')
-  // const blog = blogMatch
-  //   ? blogs.find((blog) => blog.id === blogMatch.params.id)
-  //   : null
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -57,50 +49,6 @@ const App = () => {
     dispatch(setLoggedUser(null))
   }
 
-  // const handleLikes = async (blogObj) => {
-  //   const blogObject = {
-  //     user: blogObj.user.id,
-  //     likes: blogObj.likes + 1,
-  //     author: blogObj.author,
-  //     title: blogObj.title,
-  //     url: blogObj.url,
-  //   }
-
-  //   try {
-  //     dispatch(updateBlog(blogObj.id, blogObject))
-  //     const message = `added like to ${blogObject.title}!`
-  //     const type = 'success'
-  //     dispatch(setNotification({ message, type }, 5))
-  //   } catch (exception) {
-  //     const message = 'could not update blog!'
-  //     const type = 'error'
-  //     dispatch(setNotification({ message, type }, 5))
-  //   }
-  // }
-
-  // const handleDelete = async (blogObj) => {
-  //   const confirm = window.confirm(
-  //     `Remove ${blogObj.title} by ${blogObj.author}`
-  //   )
-
-  //   if (confirm) {
-  //     if (!blogService.token) {
-  //       blogService.setToken(loggedUser.token)
-  //     }
-
-  //     try {
-  //       dispatch(deleteBlog(blogObj.id))
-  //       const message = `deleted ${blogObj.title}!`
-  //       const type = 'success'
-  //       dispatch(setNotification({ message, type }, 5))
-  //     } catch (exception) {
-  //       const message = 'could not delete blog!'
-  //       const type = 'error'
-  //       dispatch(setNotification({ message, type }, 5))
-  //     }
-  //   }
-  // }
-
   const addBlog = async (blogObject) => {
     if (!blogService.token) {
       blogService.setToken(loggedUser.token)
@@ -113,26 +61,10 @@ const App = () => {
       dispatch(setNotification({ message, type }, 5))
     } catch (exception) {
       const message = 'Unable to add blog'
-      const type = 'error'
+      const type = 'danger'
       dispatch(setNotification({ message, type }, 5))
     }
   }
-
-  // const blogList = () => (
-  //   <>
-  //     <div>
-  //       {blogs.map((blog) => (
-  //         <Blog
-  //           key={blog.id}
-  //           blog={blog}
-  //           handleLikes={handleLikes}
-  //           handleDelete={handleDelete}
-  //           user={loggedUser}
-  //         />
-  //       ))}
-  //     </div>
-  //   </>
-  // )
 
   const blogFormRef = useRef()
 
@@ -145,13 +77,15 @@ const App = () => {
   const logout = () => (
     <>
       {loggedUser.name} logged in{' '}
-      <button onClick={() => handleLogout()}>logout</button>
+      <Button variant="dark" onClick={() => handleLogout()}>
+        logout
+      </Button>
     </>
   )
 
   return (
-    <>
-      <div>
+    <div className="container">
+      <div className="container">
         <Notification notification={notification} />
         {loggedUser === null && <LoginForm />}
         {loggedUser !== null && (
@@ -167,21 +101,25 @@ const App = () => {
       <Routes>
         <Route path="/users/:id" element={<User user={user} />} />
         <Route path="/blogs/:id" element={<FullBlog />} />
-        <Route path="/users" element={<Users users={users} />} />
+        <Route
+          path="/users"
+          element={
+            loggedUser ? <Users users={users} /> : <Navigate replace to="/" />
+          }
+        />
         <Route
           path="/"
           element={
             loggedUser !== null && (
-              <div>
+              <div className="container">
                 {blogForm()}
-                {/* {blogList()} */}
                 <Blogs blogs={blogs} />
               </div>
             )
           }
         />
       </Routes>
-    </>
+    </div>
   )
 }
 

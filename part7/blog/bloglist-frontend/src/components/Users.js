@@ -1,8 +1,10 @@
+import { Table } from 'react-bootstrap'
+
 const Users = ({ users }) => {
   return (
-    <div>
+    <div className="container">
       <h2>Users</h2>
-      <table>
+      <Table bordered hover>
         <thead>
           <tr>
             <th></th>
@@ -21,7 +23,7 @@ const Users = ({ users }) => {
             )
           })}
         </tbody>
-      </table>
+      </Table>
     </div>
   )
 }
