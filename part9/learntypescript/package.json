@@ -1,0 +1,12 @@
+{
+  "name": "learntypescript",
+  "version": "1.0.0",
+  "description": "learn typescript",
+  "main": "index.js",
+  "scripts": {
+    "ts-node": "ts-node",
+    "calculateBmi": "ts-node bmiCalculator.ts"
+  },
+  "author": "pjj93",
+  "license": "ISC"
+}
