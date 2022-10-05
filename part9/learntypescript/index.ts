@@ -1,15 +1,9 @@
 import express from "express";
 import { calculateBmi } from "./bmiCalculator";
 import { calculateExercises } from "./exerciseCalculator";
-import bodyParser from "body-parser";
-
-// interface Body {
-//   daily_exercises: number[],
-//   target: number
-// }
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get('/ping', (_req, res) => {
   res.send('pong');
