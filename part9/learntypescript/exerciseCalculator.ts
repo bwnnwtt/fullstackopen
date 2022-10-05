@@ -13,6 +13,30 @@ interface Rating {
   ratingDescription: string
 }
 
+interface ParsedArguments {
+  target: number,
+  period: number[]
+}
+
+const parseCalcArguments = (args: Array<string>): ParsedArguments => {
+  if(args.length < 4) throw new Error('Not enough arguments');
+
+  let period: number[] = [];
+
+  args.slice(2).forEach((arg, i) => {
+    if(!isNaN(Number(arg))) {
+      if(i > 0) {
+        period.push(Number(arg))
+      }
+    } else {
+      throw new Error('Provided values were not numbers!')
+    }
+  })
+
+  return { target: Number(args[2]), period }
+
+}
+
 const calculateRating = (average: number, target: number): Rating => {
 
   let rating: number = -1
@@ -49,4 +73,13 @@ const calculateExercises = (hours: number[], target: number): Result => {
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  const { target, period } = parseCalcArguments(process.argv);
+  console.log(calculateExercises(period, target));
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happened.'
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
+  }
+  console.log(errorMessage)
+}
