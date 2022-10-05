@@ -40,7 +40,7 @@ const parseCalcArguments = (args: Array<string>): ParsedArguments => {
 const calculateRating = (average: number, target: number): Rating => {
 
   let rating: number = -1
-  let ratingDescription: string = undefined
+  let ratingDescription: string = ''
 
   if(average/target >= 1) {
     rating = 3

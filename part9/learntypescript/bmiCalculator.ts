@@ -17,23 +17,23 @@ const parseBMIArguments = (args: Array<string>): BMIValues => {
   }
 }
 
-const calculateBmi = (height: number, weight: number): void => {
+const calculateBmi = (height: number, weight: number): string => {
   let h: number = height / 100;
   let bmi: number = weight / (h * h)
   if (bmi < 18.5) {
-    console.log("Underweight")
+    return "Underweight"
   } else if (bmi >= 18.5 && bmi < 25) {
-    console.log("Normal (healthy weight)")
+    return "Normal (healthy weight)"
   } else if (bmi >= 25 && bmi < 30) {
-    console.log("Overweight")
+    return "Overweight"
   } else {
-    console.log("Obese")
+    return "Obese"
   }
 }
 
 try {
   const { height, weight } = parseBMIArguments(process.argv);
-  calculateBmi(height, weight);
+  console.log(calculateBmi(height, weight));
 } catch (error: unknown) {
   let errorMessage = 'Something bad happened.'
   if (error instanceof Error) {
@@ -41,3 +41,5 @@ try {
   }
   console.log(errorMessage)
 }
+
+export default calculateBmi
