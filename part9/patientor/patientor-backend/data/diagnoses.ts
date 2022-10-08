@@ -1,4 +1,3 @@
-
 const diagnoses = [
   {
     "code": "M24.2",
