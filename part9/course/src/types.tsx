@@ -1,8 +1,3 @@
-export interface Course {
-  name: string;
-  exerciseCount: number;
-}
-
 export interface CoursePartBase {
   name: string;
   exerciseCount: number;
